@@ -8,7 +8,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                <div className="flex justify-center">
                     <Header />
                </div>
-               <main className="pt-[100px] md:ml-[100px] md:mr-[100px] mr-[50px] ml-[50px]">
+               <main className="pt-[100px] md:ml-[135px] md:mr-[135px] mr-[50px] ml-[50px]">
                     {children}
                </main>
           </>
