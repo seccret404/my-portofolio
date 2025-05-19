@@ -6,6 +6,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"github.com/seccret404/portofolio-backend/config"
+	"github.com/seccret404/portofolio-backend/models"
 )
 
 func main() {
@@ -13,6 +14,7 @@ func main() {
 		log.Fatal("Error load env")
 	}
 	 config.ConnectDB()
+	 models.MigrateAll()
 
 	port := os.Getenv("PORT")
 	if port == ""{
