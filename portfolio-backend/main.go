@@ -3,10 +3,12 @@ package main
 import (
 	"log"
 	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 	"github.com/seccret404/portofolio-backend/config"
 	"github.com/seccret404/portofolio-backend/models"
+	"github.com/seccret404/portofolio-backend/routes"
 )
 
 func main() {
@@ -23,6 +25,10 @@ func main() {
 
 	app := fiber.New()
 
+	routes.RegisteredRoutes(app)
+
 	log.Printf("Server running on port %s", port)
 	log.Fatal(app.Listen(":" + port))
 }
+
+
