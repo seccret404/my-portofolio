@@ -11,5 +11,5 @@ type Project struct {
 	Stack 	string `json:"stack"`
 	Image	string `json:"image"`
 	Link		string `json:"link"`
-	UserID 	string `json:"user_id"`
+	UserID 	uint `json:"user_id"`
 }
