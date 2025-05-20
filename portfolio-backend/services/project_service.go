@@ -22,3 +22,35 @@ func GetProjectService()([]models.Project, error){
 	return projects, nil
 }
 
+func GeyByIDProjectService(id string)(*models.Project, error){
+	var project models.Project
+	if err := config.DB.First(&project, id).Error; err != nil{
+		return nil, err
+	}
+
+	return &project, nil
+}
+
+func UpdateProjectService(id string, updateData *models.Project)(*models.Project, error){
+	var project models.Project
+	if err := config.DB.First(&project, id).Error; err !=  nil{
+		return nil, err
+	}
+
+	project.Name = updateData.Name
+	project.Desc = updateData.Desc
+	project.Feature = updateData.Feature
+	project.Stack = updateData.Stack
+	project.Link = updateData.Link
+	project.Periode = updateData.Periode
+	
+	if updateData.Image != ""{
+		project.Image = updateData.Image
+	}
+
+	if err := config.DB.Save(&project).Error; err != nil{
+		return nil, err
+	}
+
+	return &project, nil
+}

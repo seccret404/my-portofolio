@@ -26,3 +26,10 @@ func BadRequest(c *fiber.Ctx, message string)error{
 		"error" : message,
 	})
 }
+
+func NotFound(c *fiber.Ctx, message string)error{
+	return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+		"status" : "error",
+		"message" : message,
+	})
+}

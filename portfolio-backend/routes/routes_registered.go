@@ -14,6 +14,8 @@ func RegisteredRoutes(app *fiber.App){
 	//project
 	routeGroup.Post("/create-project", handler.CreateProject)
 	routeGroup.Get("/get-project", handler.GetProject)
-
+	routeGroup.Get("/get-project/:id", handler.GeyByIDProject)
+	routeGroup.Put("/update-project/:id", handler.UpdateProject)
+	
 
 }

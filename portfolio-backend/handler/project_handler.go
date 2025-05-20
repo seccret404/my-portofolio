@@ -54,3 +54,62 @@ func GetProject(c *fiber.Ctx)error{
 
 	return utils.Ok(c, projects)
 }
+
+func GeyByIDProject(c *fiber.Ctx)error{
+	var id = c.Params("id")
+	 project, err := services.GeyByIDProjectService(id)
+	 if err != nil{
+		return utils.NotFound(c, "Ga nemu")
+	 }
+
+	 return utils.Ok(c, project)
+}
+
+
+func UpdateProject(c *fiber.Ctx)error{
+	var id = c.Params("id")
+	
+	project, err := services.GeyByIDProjectService(id)
+	if err != nil{
+		return utils.NotFound(c, err.Error())
+	}
+
+	//input dari form
+	if name := c.FormValue("name"); name != "" {
+		project.Name = name
+	}
+	if desc := c.FormValue("desc"); desc != "" {
+		project.Desc = desc
+	}
+	if periode := c.FormValue("periode"); periode != "" {
+		project.Periode = periode
+	}
+	if feature := c.FormValue("feature"); feature != "" {
+		project.Feature = feature
+	}
+	if stack := c.FormValue("stack"); stack != "" {
+		project.Stack = stack
+	}
+	if link := c.FormValue("link"); link != "" {
+		project.Link = link
+	}
+
+
+	//optional image
+	file, err := c.FormFile("image")
+	if err != nil && file != nil{
+		imageUrl, err := cloudinary.UploadToCoudinary(file)
+		if err != nil{
+			return utils.BadRequest(c, "Gagal upload")
+		}
+
+		project.Image = imageUrl
+	}
+ 
+	 updateProject, err := services.UpdateProjectService(id, project)
+	 if err != nil{
+		return utils.BadRequest(c, "gagal nyimpan")
+	 }
+
+	 return utils.Ok(c, updateProject)
+}
