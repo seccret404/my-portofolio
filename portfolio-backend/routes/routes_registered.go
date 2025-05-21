@@ -17,6 +17,12 @@ func RegisteredRoutes(app *fiber.App){
 	routeGroup.Get("/get-project", handler.GetProject)
 	routeGroup.Get("/get-project/:id", handler.GeyByIDProject)
 	routeGroup.Put("/update-project/:id", handler.UpdateProject)
+
+	//experience
+	routeGroup.Get("/get-experience", handler.GetExperience)
+	routeGroup.Get("/get-experience/:id", handler.GetByIDExperience)
+	routeGroup.Post("/create-experience", handler.CreateExperience)
+	routeGroup.Put("/update-experience/:id", handler.UpdateExperience)
 	
 
 }

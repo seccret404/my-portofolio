@@ -6,6 +6,7 @@ func MigrateAll() {
 	err := config.DB.AutoMigrate(
 		&User{},
 		&Project{},
+		&Experience{},
 		
 	)
 
