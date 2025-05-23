@@ -1,4 +1,5 @@
 import Layout from "../../Components/Layout/Layout";
+import { motion } from "framer-motion";
 
 export default function ExperiencePage() {
   const experiences = [
@@ -40,57 +41,178 @@ export default function ExperiencePage() {
     }
   ];
 
+  // Animation variants
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const item = {
+    hidden: { opacity: 0, y: 40 },
+    show: { 
+      opacity: 1, 
+      y: 0, 
+      transition: { 
+        duration: 0.6, 
+        ease: "easeOut",
+        when: "beforeChildren"
+      } 
+    }
+  };
+
+  const fadeIn = {
+    hidden: { opacity: 0 },
+    show: { opacity: 1, transition: { duration: 0.8 } }
+  };
+
   return (
     <Layout>
-      <div className="min-h-screen  mb-4">
-        <div className="max-w-5xl mx-auto">
-          <h1 className="text-4xl font-bold text-[#cee8ff] mb-2">Work Experience</h1>
-          <p className="text-lg text-[#94A3B8] mb-12">My professional journey and contributions</p>
-          
-          <div className="space-y-10">
-            {experiences.map((exp, index) => (
-              <div key={index} className="relative group">
-                {/* Timeline dot */}
-                <div className="absolute left-[-32px] top-5 h-4 w-4 rounded-full bg-[#3D5A80] border-4 border-[#1F3A5F] group-hover:bg-[#4d648d] transition-colors"></div>
-                
-                {/* Experience card */}
-                <div className="bg-[#1F3A5F] rounded-lg p-6 border border-[#3D5A80] hover:border-[#4d648d] transition-all hover:shadow-lg">
-                  <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-                    <div>
-                      <h2 className="text-2xl font-bold text-white">{exp.company}</h2>
-                      <h3 className="text-xl text-[#cee8ff]">{exp.role}</h3>
+      <div className="min-h-screen mb-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <motion.div
+            initial="hidden"
+            animate="show"
+            variants={fadeIn}
+            className="text-center mb-16"
+          >
+            <motion.h1 
+              className="text-5xl font-bold text-[#cee8ff] mb-2"
+              whileHover={{ scale: 1.02 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              Work Experience
+            </motion.h1>
+            <motion.p 
+              className="text-lg text-[#94A3B8] mb-12"
+              whileHover={{ scale: 1.01 }}
+            >
+              My professional journey and contributions
+            </motion.p>
+          </motion.div>
+
+          <motion.div 
+            className="relative"
+            initial="hidden"
+            animate="show"
+            variants={container}
+          >
+            <div className="space-y-10">
+              {experiences.map((exp, index) => (
+                <motion.div
+                  key={index}
+                  className="relative group"
+                  variants={item}
+                  whileHover={{ y: -5 }}
+                  viewport={{ once: true, margin: "-100px" }}
+                >
+                  {/* Experience card */}
+                  <motion.div
+                    className="bg-[#1F3A5F] rounded-lg p-6 border border-[#3D5A80] hover:border-[#4d648d] transition-all hover:shadow-lg"
+                    whileHover={{ 
+                      boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
+                      transition: { duration: 0.3 }
+                    }}
+                  >
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+                      <div>
+                        <motion.h2 
+                          className="text-2xl font-bold text-white"
+                          whileHover={{ color: "#cee8ff" }}
+                        >
+                          {exp.company}
+                        </motion.h2>
+                        <motion.h3 
+                          className="text-xl text-[#cee8ff]"
+                          whileHover={{ scale: 1.01 }}
+                        >
+                          {exp.role}
+                        </motion.h3>
+                      </div>
+                      <motion.div 
+                        className="bg-[#3D5A80] text-white px-3 py-1 rounded-md text-sm"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {exp.period}
+                      </motion.div>
                     </div>
-                    <div className="bg-[#3D5A80] text-white px-3 py-1 rounded-md text-sm">
-                      {exp.period}
+
+                    <div className="mt-6">
+                      <motion.h4 
+                        className="text-lg font-semibold text-white mb-3"
+                        whileHover={{ x: 5 }}
+                      >
+                        Key Contributions:
+                      </motion.h4>
+                      <ul className="space-y-2">
+                        {exp.contributions.map((item, i) => (
+                          <motion.li 
+                            key={i} 
+                            className="flex items-start"
+                            initial={{ opacity: 0, x: -20 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 * i, duration: 0.4 }}
+                            viewport={{ once: true }}
+                          >
+                            <motion.span 
+                              className="text-[#4d648d] mr-2"
+                              animate={{ rotate: [0, 10, 0] }}
+                              transition={{ 
+                                repeat: Infinity,
+                                repeatType: "reverse",
+                                duration: 2,
+                                delay: i * 0.3
+                              }}
+                            >
+                              •
+                            </motion.span>
+                            <span className="text-[#E2E8F0]">{item}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
                     </div>
-                  </div>
-                  
-                  <div className="mt-6">
-                    <h4 className="text-lg font-semibold text-white mb-3">Key Contributions:</h4>
-                    <ul className="space-y-2">
-                      {exp.contributions.map((item, i) => (
-                        <li key={i} className="flex items-start">
-                          <span className="text-[#4d648d] mr-2">•</span>
-                          <span className="text-[#E2E8F0]">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  
-                  <div className="mt-6">
-                    <h4 className="text-lg font-semibold text-white mb-3">Tech Stack:</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {exp.techStack.map((tech, i) => (
-                        <span key={i} className="px-3 py-1 bg-[#4d648d] rounded-full text-sm text-white">
-                          {tech}
-                        </span>
-                      ))}
+
+                    <div className="mt-6">
+                      <motion.h4 
+                        className="text-lg font-semibold text-white mb-3"
+                        whileHover={{ x: 5 }}
+                      >
+                        Tech Stack:
+                      </motion.h4>
+                      <div className="flex flex-wrap gap-2">
+                        {exp.techStack.map((tech, i) => (
+                          <motion.span 
+                            key={i} 
+                            className="px-3 py-1 bg-[#4d648d] rounded-full text-sm text-white"
+                            initial={{ opacity: 0, scale: 0.5 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            whileHover={{ 
+                              scale: 1.1,
+                              backgroundColor: "#3D5A80"
+                            }}
+                            transition={{ 
+                              type: "spring",
+                              stiffness: 500,
+                              damping: 15,
+                              delay: i * 0.1
+                            }}
+                            viewport={{ once: true }}
+                          >
+                            {tech}
+                          </motion.span>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
     </Layout>

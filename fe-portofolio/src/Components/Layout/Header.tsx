@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom'; // Ganti Link dengan NavLink
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +14,13 @@ const Header: React.FC = () => {
     { label: 'Tech Stack', path: '/tech-stack' },
   ];
 
+  // Style untuk link aktif
+  const activeStyle = {
+    color: '#cee8ff',
+    fontWeight: 'bold',
+    borderBottom: '2px solid #4d648d'
+  };
+
   return (
     <header className="bg-[#1f2b3e] shadow-md fixed w-[80%] rounded-[25px] mt-4 z-50">
       <div className="max-w-7xl mx-auto px-8 py-3 flex justify-between items-center">
@@ -23,13 +30,14 @@ const Header: React.FC = () => {
         {/* Desktop Menu */}
         <nav className="hidden md:flex gap-6">
           {menuItems.map((item) => (
-            <Link
+            <NavLink
               key={item.label}
               to={item.path}
-              className="text-[#4d648d] hover:text-[#cee8ff] transition"
+              className="text-[#4d648d] hover:text-[#cee8ff] transition pb-1"
+              style={({ isActive }) => isActive ? activeStyle : {}}
             >
               {item.label}
-            </Link>
+            </NavLink>
           ))}
         </nav>
 
@@ -46,14 +54,15 @@ const Header: React.FC = () => {
       {isOpen && (
         <div className="md:hidden rounded bg-[#1f2b3e] shadow-md px-4 py-3 space-y-2">
           {menuItems.map((item) => (
-            <Link
+            <NavLink
               key={item.label}
               to={item.path}
-              className="block text-[#4d648d] hover:text-[#cee8ff] transition"
+              className="block text-[#4d648d] hover:text-[#cee8ff] transition py-1"
+              style={({ isActive }) => isActive ? activeStyle : {}}
               onClick={() => setIsOpen(false)}
             >
               {item.label}
-            </Link>
+            </NavLink>
           ))}
         </div>
       )}

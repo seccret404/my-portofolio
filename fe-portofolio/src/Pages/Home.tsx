@@ -5,6 +5,11 @@ export default function Home() {
      return (
           <Layout>
                <div className="min-h-[80vh] flex items-center justify-center px-4 sm:px-6 lg:px-8 mb-4">
+                    {/* Floating objects with animation */}
+        <div className="absolute top-1/4 left-1/4 w-40 h-40 rounded-full bg-[rgba(174,206,239,0.2)] animate-float1"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-32 h-32 rounded-full bg-[rgba(174,206,239,0.15)] animate-float2"></div>
+        <div className="absolute top-1/3 right-1/3 w-48 h-48 rounded-full bg-[rgba(174,206,239,0.1)] animate-float3"></div>
+
                     <div className="max-w-6xl w-full">
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                               <div className="order-2 md:order-1">
