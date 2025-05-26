@@ -1,25 +1,32 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import type { Project } from '@/types';
+import type { Project } from '../../api/types';
+import { updateProject } from '../../api/projectApi';
 
 interface EditProjectModalProps {
      isOpen: boolean;
      onClose: () => void;
-     onEdit: (updatedProject: Project) => void;
+     onEdit: (updatedProject: Project) => void; // Callback to update parent state
      project: Project | null;
 }
 
 const EditProjectModal = ({ isOpen, onClose, onEdit, project }: EditProjectModalProps) => {
      const [formData, setFormData] = useState<Omit<Project, 'id'>>({
-          title: '',
-          description: '',
+          name: '',
+          desc: '',
           stack: [],
-          githubLink: '',
-          image: ''
+          link: '',
+          image: '',
+          feature: '',
+          user_id: '',
+          periode: ''
      });
      const [currentStack, setCurrentStack] = useState('');
+     const [isSubmitting, setIsSubmitting] = useState(false);
+     const [error, setError] = useState<string | null>(null);
 
+     // Initialize form with project data
      useEffect(() => {
           if (project) {
                const { id, ...rest } = project;
@@ -27,11 +34,28 @@ const EditProjectModal = ({ isOpen, onClose, onEdit, project }: EditProjectModal
           }
      }, [project]);
 
-     const handleSubmit = (e: React.FormEvent) => {
+     const handleSubmit = async (e: React.FormEvent) => {
           e.preventDefault();
-          if (project) {
-               onEdit({ ...formData, id: project.id });
+          if (!project) return;
+
+          setIsSubmitting(true);
+          setError(null);
+
+          try {
+               // Call the API to update the project
+               const updatedProject = await updateProject(project.id, {
+                    ...formData,
+                    id: project.id // Ensure ID is included
+               });
+
+               // Notify parent component of the update
+               onEdit(updatedProject);
                onClose();
+          } catch (err) {
+               console.error('Failed to update project:', err);
+               setError(err instanceof Error ? err.message : 'Failed to update project');
+          } finally {
+               setIsSubmitting(false);
           }
      };
 
@@ -43,6 +67,13 @@ const EditProjectModal = ({ isOpen, onClose, onEdit, project }: EditProjectModal
                });
                setCurrentStack('');
           }
+     };
+
+     const removeStack = (tech: string) => {
+          setFormData({
+               ...formData,
+               stack: formData.stack.filter((t) => t !== tech)
+          });
      };
 
      return (
@@ -63,10 +94,20 @@ const EditProjectModal = ({ isOpen, onClose, onEdit, project }: EditProjectModal
                               <div className="p-6">
                                    <div className="flex justify-between items-center mb-4">
                                         <h3 className="text-xl font-bold text-[#1F3A5F]">Edit Project</h3>
-                                        <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+                                        <button
+                                             onClick={onClose}
+                                             className="text-gray-500 hover:text-gray-700"
+                                             disabled={isSubmitting}
+                                        >
                                              <X size={24} />
                                         </button>
                                    </div>
+
+                                   {error && (
+                                        <div className="mb-4 p-2 bg-red-100 text-red-700 rounded-md">
+                                             {error}
+                                        </div>
+                                   )}
 
                                    <form onSubmit={handleSubmit} className='text-gray-700'>
                                         <div className="space-y-4">
@@ -75,9 +116,10 @@ const EditProjectModal = ({ isOpen, onClose, onEdit, project }: EditProjectModal
                                                   <input
                                                        type="text"
                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                                       value={formData.title}
-                                                       onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                                       value={formData.name}
+                                                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                                        required
+                                                       disabled={isSubmitting}
                                                   />
                                              </div>
 
@@ -86,9 +128,10 @@ const EditProjectModal = ({ isOpen, onClose, onEdit, project }: EditProjectModal
                                                   <textarea
                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
                                                        rows={3}
-                                                       value={formData.description}
-                                                       onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                                                       value={formData.desc}
+                                                       onChange={(e) => setFormData({ ...formData, desc: e.target.value })}
                                                        required
+                                                       disabled={isSubmitting}
                                                   />
                                              </div>
 
@@ -101,11 +144,13 @@ const EditProjectModal = ({ isOpen, onClose, onEdit, project }: EditProjectModal
                                                             value={currentStack}
                                                             onChange={(e) => setCurrentStack(e.target.value)}
                                                             placeholder="Add technology"
+                                                            disabled={isSubmitting}
                                                        />
                                                        <button
                                                             type="button"
                                                             onClick={addStack}
                                                             className="px-3 py-2 bg-[#3D5A80] text-white rounded-md"
+                                                            disabled={isSubmitting}
                                                        >
                                                             Add
                                                        </button>
@@ -116,13 +161,9 @@ const EditProjectModal = ({ isOpen, onClose, onEdit, project }: EditProjectModal
                                                                  {tech}
                                                                  <button
                                                                       type="button"
-                                                                      onClick={() =>
-                                                                           setFormData({
-                                                                                ...formData,
-                                                                                stack: formData.stack.filter((t) => t !== tech)
-                                                                           })
-                                                                      }
+                                                                      onClick={() => removeStack(tech)}
                                                                       className="ml-1"
+                                                                      disabled={isSubmitting}
                                                                  >
                                                                       ×
                                                                  </button>
@@ -136,8 +177,9 @@ const EditProjectModal = ({ isOpen, onClose, onEdit, project }: EditProjectModal
                                                   <input
                                                        type="url"
                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                                                       value={formData.githubLink}
-                                                       onChange={(e) => setFormData({ ...formData, githubLink: e.target.value })}
+                                                       value={formData.link}
+                                                       onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                                                       disabled={isSubmitting}
                                                   />
                                              </div>
 
@@ -148,6 +190,7 @@ const EditProjectModal = ({ isOpen, onClose, onEdit, project }: EditProjectModal
                                                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
                                                        value={formData.image}
                                                        onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                                                       disabled={isSubmitting}
                                                   />
                                              </div>
                                         </div>
@@ -157,14 +200,16 @@ const EditProjectModal = ({ isOpen, onClose, onEdit, project }: EditProjectModal
                                                   type="button"
                                                   onClick={onClose}
                                                   className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                                                  disabled={isSubmitting}
                                              >
                                                   Cancel
                                              </button>
                                              <button
                                                   type="submit"
-                                                  className="px-4 py-2 bg-[#3D5A80] text-white hover:bg-[#4d648d] rounded-md"
+                                                  className="px-4 py-2 bg-[#3D5A80] text-white hover:bg-[#4d648d] rounded-md disabled:opacity-50"
+                                                  disabled={isSubmitting}
                                              >
-                                                  Save Changes
+                                                  {isSubmitting ? 'Saving...' : 'Save Changes'}
                                              </button>
                                         </div>
                                    </form>
