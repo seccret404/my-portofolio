@@ -17,7 +17,9 @@ export default function DetailExperienceModal({
         return stackString.split(',').map(tech => tech.trim());
     };
 
-    const techStack = parseStack(experience.stack);
+const techStack = parseStack(
+  Array.isArray(experience.stack) ? experience.stack.join(', ') : experience.stack
+);
 
     return (
         <Transition appear show={isOpen} as={Fragment}>

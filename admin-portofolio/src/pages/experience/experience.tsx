@@ -18,6 +18,10 @@ export interface Experience {
      stack: string | string[];
 }
 
+interface ExperienceResponse {
+     data: Experience[];
+}
+
 const ExperiencePage: React.FC = () => {
      const [experiences, setExperiences] = useState<Experience[]>([]);
      const [loading, setLoading] = useState<boolean>(true);
@@ -29,13 +33,15 @@ const ExperiencePage: React.FC = () => {
      });
      const [selectedExperience, setSelectedExperience] = useState<Experience | null>(null);
 
+
+
      const fetchExperiences = async () => {
           try {
                setLoading(true);
                setError(null);
-               const response = await apiClient.get('/get-experience');
-               console.log('API Response:', response.data); // Debug log
-               setExperiences(response.data || []);
+               const response = await apiClient.get<ExperienceResponse>('/get-experience');
+               console.log('API Response:', response.data);
+               setExperiences(response.data.data || []);
           } catch (err) {
                setError(err as Error);
                console.error('Error fetching experiences:', err);
@@ -43,6 +49,7 @@ const ExperiencePage: React.FC = () => {
                setLoading(false);
           }
      };
+
 
      useEffect(() => {
           fetchExperiences();
@@ -145,7 +152,7 @@ const ExperiencePage: React.FC = () => {
                                                        </p>
                                                   </div>
 
-                                                 
+
 
                                                   {/* Tech Stack */}
                                                   {techStack.length > 0 && (
@@ -191,7 +198,6 @@ const ExperiencePage: React.FC = () => {
                                                             whileTap={{ scale: 0.9 }}
                                                             className="text-red-500 hover:text-red-700 p-1"
                                                             title="Delete"
-                                                            onClick={() => handleDelete(experience.ID)}
                                                        >
                                                             <Trash2 size={18} />
                                                        </motion.button>
@@ -207,9 +213,15 @@ const ExperiencePage: React.FC = () => {
                     <ExperienceDetailModal
                          isOpen={modalState.detail}
                          onClose={() => handleCloseModal('detail')}
-                         experience={selectedExperience}
+                         experience={{
+                              ...selectedExperience,
+                              stack: Array.isArray(selectedExperience.stack)
+                                   ? selectedExperience.stack.join(', ')
+                                   : selectedExperience.stack
+                         }}
                     />
                )}
+
           </AppLayout>
      );
 };

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 import AppLayout from '../../components/layouts/AppLayout';
 import { useExperiences } from '../../hooks/useExperience';
+import type { Experience } from '@/api/types';
 
 export default function AddExperience() {
      const { createExperience } = useExperiences();

@@ -1,5 +1,5 @@
 import apiClient from './apiClient';
-import type { Project, ProjectFormData, ApiError } from './types';
+import type { Project, ApiError } from './types';
 
 export const getProjects = async (): Promise<Project[]> => {
   try {
@@ -9,7 +9,7 @@ export const getProjects = async (): Promise<Project[]> => {
     throw error as ApiError;
   }
 };
-export const getProjectById = async (id: number): Promise<Project> => {
+export const getProjectById = async (id: number): Promise<Project>   => {
   try {
     const response = await apiClient.get<Project>(`/get-project/${id}`);
     return response.data;

@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
 import apiClient from '../api/apiClient';
-import type { Experience } from '@/api/types';
-import type { ApiError } from '@/api/types';
+import type {
+     Experience,
+     ApiError,
+     ExperienceResponse,
+     SingleExperienceResponse,
+} from '@/api/types';
+
 export const useExperiences = () => {
      const [experiences, setExperiences] = useState<Experience[]>([]);
      const [loading, setLoading] = useState<boolean>(true);
@@ -11,7 +16,7 @@ export const useExperiences = () => {
           try {
                setLoading(true);
                setError(null);
-               const response = await apiClient.get('/get-experience');
+               const response = await apiClient.get<ExperienceResponse>('/get-experience');
                setExperiences(response.data.data || []);
           } catch (err) {
                setError(err as ApiError);
@@ -25,20 +30,23 @@ export const useExperiences = () => {
           fetchExperiences();
      }, []);
 
-     const createExperience = async (experience: Omit<Experience, 'ID' | 'CreatedAt' | 'UpdatedAt' | 'DeletedAt'>) => {
+     const createExperience = async (
+          experience: Omit<Experience, 'ID' | 'CreatedAt' | 'UpdatedAt' | 'DeletedAt'>
+     ) => {
           try {
                setLoading(true);
-               const response = await apiClient.post('/create-experience', {
-                    company: experience.company,
-                    role: experience.role,
-                    periode: experience.periode,
-                    contribution: experience.contribution,
-                    stack: experience.stack // Already in comma-separated string format
-               });
+               const response = await apiClient.post<SingleExperienceResponse>(
+                    '/create-experience',
+                    {
+                         company: experience.company,
+                         role: experience.role,
+                         periode: experience.periode,
+                         contribution: experience.contribution,
+                         stack: experience.stack, // string, e.g., "Golang,React"
+                    }
+               );
 
-               console.log('API Response:', response.data); // Debug log
-
-               setExperiences(prev => [...prev, response.data.data]);
+               setExperiences((prev) => [...prev, response.data.data]);
                return response.data.data;
           } catch (err) {
                const apiError = err as ApiError;
@@ -54,9 +62,12 @@ export const useExperiences = () => {
           try {
                setLoading(true);
                setError(null);
-               const response = await apiClient.put(`/experiences/${id}`, updatedExperience);
-               setExperiences(prev =>
-                    prev.map(exp => (exp.ID === id ? { ...exp, ...response.data.data } : exp))
+               const response = await apiClient.put<SingleExperienceResponse>(
+                    `/experiences/${id}`,
+                    updatedExperience
+               );
+               setExperiences((prev) =>
+                    prev.map((exp) => (exp.ID === id ? { ...exp, ...response.data.data } : exp))
                );
                return response.data.data;
           } catch (err) {
@@ -74,7 +85,7 @@ export const useExperiences = () => {
                setLoading(true);
                setError(null);
                await apiClient.delete(`/experiences/${id}`);
-               setExperiences(prev => prev.filter(exp => exp.ID !== id));
+               setExperiences((prev) => prev.filter((exp) => exp.ID !== id));
           } catch (err) {
                const apiError = err as ApiError;
                setError(apiError);

@@ -6,9 +6,9 @@ import { updateProject, getProjectById } from '../../api/projectApi';
 import AppLayout from '../../components/layouts/AppLayout';
 
 const EditProject = () => {
- const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState<Omit<Project, 'id'>>({
     name: '',
     desc: '',
@@ -18,9 +18,9 @@ const EditProject = () => {
     feature: '',
     user_id: '',
     periode: '',
-    ID: id
+    ID: Number(id)
   });
-  
+
   const [currentStack, setCurrentStack] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -29,12 +29,12 @@ const EditProject = () => {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const project = await getProjectById(id!);
+        const project = await getProjectById(Number(id)!);
         if (project) {
           setFormData({
             ...project,
-            stack: typeof project.stack === 'string' 
-              ? project.stack.split(',') 
+            stack: typeof project.stack === 'string'
+              ? project.stack
               : project.stack
           });
         }
@@ -78,7 +78,7 @@ const EditProject = () => {
       stack: formData.stack.filter(t => t !== tech)
     });
   };
- 
+
 
   return (
     <AppLayout>
@@ -179,30 +179,31 @@ const EditProject = () => {
               <input
                 type="url"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                value={formData.image}
+                value={typeof formData.image === 'string' ? formData.image : ''}
                 onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                 disabled={isSubmitting}
               />
             </div>
-          </div>
 
-          <div className="mt-8 flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={() => navigate(-1)}
-              className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
-              disabled={isSubmitting}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-[#3D5A80] text-white hover:bg-[#4d648d] rounded-md disabled:opacity-50"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Saving...' : 'Save Changes'}
-            </button>
-          </div>
+
+            <div className="mt-8 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => navigate(-1)}
+                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-md"
+                disabled={isSubmitting}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-[#3D5A80] text-white hover:bg-[#4d648d] rounded-md disabled:opacity-50"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+            </div>
         </form>
       </div>
     </AppLayout>
